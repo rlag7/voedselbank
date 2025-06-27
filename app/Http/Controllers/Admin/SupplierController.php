@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -18,9 +19,10 @@ class SupplierController extends Controller
 
     public function create()
     {
-        $products = Product::all();
-        return view('admin.suppliers.create', compact('products'));
+        $productCategories = \App\Models\ProductCategory::with('products')->get();
+        return view('admin.suppliers.create', compact('productCategories'));
     }
+
 
     public function store(Request $request)
     {
@@ -33,7 +35,7 @@ class SupplierController extends Controller
             'supplier_type' => ['required', Rule::in([
                 'supermarkt', 'groothandel', 'boer', 'instelling', 'overheid', 'particulier'
             ])],
-            'supplier_number' => ['required', 'string', 'max:20', Rule::unique('suppliers')],
+            'supplier_number' => ['nullable', 'string', 'max:20', Rule::unique('suppliers')],
             'products' => ['nullable', 'array'],
             'products.*' => ['integer', 'exists:products,id'],
             'is_active' => ['nullable', 'boolean'],
@@ -46,7 +48,7 @@ class SupplierController extends Controller
             'contact_email' => $validated['contact_email'],
             'phone' => $validated['phone'] ?? null,
             'supplier_type' => $validated['supplier_type'],
-            'supplier_number' => $validated['supplier_number'],
+            'supplier_number' => $validated['supplier_number'] ?? 'SUPPLY' . rand(1000, 9999),
             'is_active' => $request->has('is_active'),
         ]);
 
@@ -61,6 +63,7 @@ class SupplierController extends Controller
 
         return redirect()->route('admin.suppliers.index')->with('success', 'Leverancier succesvol toegevoegd.');
     }
+
 
     public function show(Supplier $supplier)
     {
