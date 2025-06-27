@@ -22,12 +22,12 @@
         </div>
     @endif
 
-    <form action="{{ route('employee.customers.store') }}" method="POST" class="space-y-4">
+    <form action="{{ route('employee.customers.store') }}" method="POST" class="space-y-4" novalidate>
         @csrf
 
         <div>
             <label class="block mb-1">Selecteer Persoon</label>
-            <select name="person_id" class="w-full border rounded px-3 py-2" required>
+            <select name="person_id" class="w-full border rounded px-3 py-2" required title="Selecteer een persoon.">
                 <option value="">-- Kies een persoon --</option>
                 @foreach($people as $person)
                     <option value="{{ $person->id }}" {{ old('person_id') == $person->id ? 'selected' : '' }}>
@@ -40,42 +40,45 @@
         <div class="grid grid-cols-3 gap-4">
             <div>
                 <label class="block mb-1">Volwassenen</label>
-                <input type="number" name="number_of_adults" min="0"
+                <input type="number" name="number_of_adults" min="0" max="10"
                        value="{{ old('number_of_adults', 0) }}"
-                       class="w-full border rounded px-3 py-2" required>
+                       class="w-full border rounded px-3 py-2"
+                       required title="Voer het aantal volwassenen in (0-10)">
             </div>
             <div>
                 <label class="block mb-1">Kinderen</label>
-                <input type="number" name="number_of_children" min="0"
+                <input type="number" name="number_of_children" min="0" max="10"
                        value="{{ old('number_of_children', 0) }}"
-                       class="w-full border rounded px-3 py-2" required>
+                       class="w-full border rounded px-3 py-2"
+                       required title="Voer het aantal kinderen in (0-10)">
             </div>
             <div>
                 <label class="block mb-1">Baby’s</label>
-                <input type="number" name="number_of_babies" min="0"
+                <input type="number" name="number_of_babies" min="0" max="5"
                        value="{{ old('number_of_babies', 0) }}"
-                       class="w-full border rounded px-3 py-2" required>
+                       class="w-full border rounded px-3 py-2"
+                       required title="Voer het aantal baby's in (0-5)">
             </div>
         </div>
 
         <div class="grid grid-cols-3 gap-4">
             <div>
                 <label class="block mb-1">Veganistisch</label>
-                <select name="is_vegan" class="w-full border rounded px-3 py-2" required>
+                <select name="is_vegan" class="w-full border rounded px-3 py-2" required title="Is deze klant veganistisch?">
                     <option value="0" {{ old('is_vegan') == '0' ? 'selected' : '' }}>Nee</option>
                     <option value="1" {{ old('is_vegan') == '1' ? 'selected' : '' }}>Ja</option>
                 </select>
             </div>
             <div>
                 <label class="block mb-1">Vegetarisch</label>
-                <select name="is_vegetarian" class="w-full border rounded px-3 py-2" required>
+                <select name="is_vegetarian" class="w-full border rounded px-3 py-2" required title="Is deze klant vegetarisch?">
                     <option value="0" {{ old('is_vegetarian') == '0' ? 'selected' : '' }}>Nee</option>
                     <option value="1" {{ old('is_vegetarian') == '1' ? 'selected' : '' }}>Ja</option>
                 </select>
             </div>
             <div>
                 <label class="block mb-1">Geen Varkensvlees</label>
-                <select name="no_pork" class="w-full border rounded px-3 py-2" required>
+                <select name="no_pork" class="w-full border rounded px-3 py-2" required title="Eet deze klant geen varkensvlees?">
                     <option value="0" {{ old('no_pork') == '0' ? 'selected' : '' }}>Nee</option>
                     <option value="1" {{ old('no_pork') == '1' ? 'selected' : '' }}>Ja</option>
                 </select>
