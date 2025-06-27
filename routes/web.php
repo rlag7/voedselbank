@@ -13,6 +13,16 @@ Route::get('/', function () {
     return view('home');
 });
 
+// Homepagina
+Route::get('/contact', function () {
+    return view('contact');
+});
+
+// Homepagina
+Route::get('/about', function () {
+    return view('about');
+});
+
 // Dashboard
 Route::get('/dashboard', function () {
     return view('dashboard');
