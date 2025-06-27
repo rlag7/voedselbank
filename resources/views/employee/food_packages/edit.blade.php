@@ -52,8 +52,9 @@
             @enderror
 
             <div>
+                <input type="hidden" name="is_active" value="0" />
                 <label class="inline-flex items-center">
-                    <input type="checkbox" name="is_active" class="form-checkbox text-blue-600"
+                    <input type="checkbox" name="is_active" value="1" class="form-checkbox"
                         {{ $foodPackage->is_active ? 'checked' : '' }}>
                     <span class="ml-2 text-sm text-gray-700">Actief</span>
                 </label>

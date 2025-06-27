@@ -72,7 +72,6 @@ class FoodPackageController extends Controller
 
     public function update(Request $request, FoodPackage $foodPackage)
     {
-        // Zelfde validatie en check als in store()
         $validated = $request->validate($this->rules(), $this->messages());
 
         $compositionDate = Carbon::parse($validated['composition_date']);
@@ -89,8 +88,8 @@ class FoodPackageController extends Controller
                 ->withInput();
         }
 
-        $validated['is_active'] = $request->has('is_active') ? 1 : 0;
-
+        // Gebruik input() ipv has()
+        $validated['is_active'] = $request->input('is_active', 0);
         $foodPackage->update($validated);
 
         return redirect()->route('employee.food_packages.index')
@@ -99,9 +98,16 @@ class FoodPackageController extends Controller
 
     public function destroy(FoodPackage $foodPackage)
     {
-        // Verwijder het pakket
+        // Voorkom verwijderen als het pakket actief is
+        if ($foodPackage->is_active) {
+            return redirect()->route('employee.food_packages.index')
+                ->withErrors(['delete' => 'Actieve voedselpakketten kunnen niet worden verwijderd.']);
+        }
+
         $foodPackage->delete();
-        return redirect()->route('employee.food_packages.index')->with('success', 'Package deleted.');
+
+        return redirect()->route('employee.food_packages.index')
+            ->with('success', 'Voedselpakket succesvol verwijderd.');
     }
 
     // Validatieregels
