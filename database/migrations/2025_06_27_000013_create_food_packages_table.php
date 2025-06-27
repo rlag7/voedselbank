@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
             $table->date('composition_date');
             $table->date('distribution_date')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
