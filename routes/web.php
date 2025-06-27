@@ -8,20 +8,17 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// Homepagina
 Route::get('/', function () {
     return view('home');
-});
+})->name('home');
 
-// Homepagina
-Route::get('/contact', function () {
-    return view('contact');
-});
-
-// Homepagina
 Route::get('/about', function () {
     return view('about');
-});
+})->name('about');
+
+Route::get('/contact', function () {
+    return view('contact');
+})->name('contact');
 
 // Dashboard
 Route::get('/dashboard', function () {
