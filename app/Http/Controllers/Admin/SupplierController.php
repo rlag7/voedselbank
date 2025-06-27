@@ -35,10 +35,20 @@ class SupplierController extends Controller
             'supplier_type' => ['required', Rule::in([
                 'supermarkt', 'groothandel', 'boer', 'instelling', 'overheid', 'particulier'
             ])],
-            'supplier_number' => ['nullable', 'string', 'max:20', Rule::unique('suppliers')],
-            'products' => ['nullable', 'array'],
-            'products.*' => ['integer', 'exists:products,id'],
+            'supplier_number' => ['required', 'string', 'max:20', Rule::unique('suppliers')],
+            'products_and_quantities' => ['nullable', 'array'],
+            'products_and_quantities.*' => ['string', 'regex:/^\d+:\d+$/'],
             'is_active' => ['nullable', 'boolean'],
+        ], [
+            'company_name.required' => 'De bedrijfsnaam is verplicht.',
+            'company_name.unique' => 'Deze bedrijfsnaam bestaat al.',
+            'contact_name.required' => 'De naam van de contactpersoon is verplicht.',
+            'contact_email.required' => 'Het e-mailadres is verplicht.',
+            'contact_email.email' => 'Voer een geldig e-mailadres in.',
+            'supplier_type.required' => 'Kies een type leverancier.',
+            'supplier_number.required' => 'Het leveranciersnummer is verplicht.',
+            'supplier_number.unique' => 'Dit leveranciersnummer bestaat al.',
+            'products_and_quantities.*.regex' => 'Producten en aantallen moeten geldig zijn.',
         ]);
 
         $supplier = Supplier::create([
@@ -48,14 +58,18 @@ class SupplierController extends Controller
             'contact_email' => $validated['contact_email'],
             'phone' => $validated['phone'] ?? null,
             'supplier_type' => $validated['supplier_type'],
-            'supplier_number' => $validated['supplier_number'] ?? 'SUPPLY' . rand(1000, 9999),
+            'supplier_number' => $validated['supplier_number'],
             'is_active' => $request->has('is_active'),
         ]);
 
-        if (!empty($validated['products'])) {
-            foreach ($validated['products'] as $productId) {
+        if (!empty($validated['products_and_quantities'])) {
+            foreach ($validated['products_and_quantities'] as $entry) {
+                [$productId, $quantity] = explode(':', $entry);
+                $productId = (int) $productId;
+                $quantity = max((int) $quantity, 0); // voorkom negatieve aantallen
+
                 $supplier->products()->attach($productId, [
-                    'stock_quantity' => 0,
+                    'stock_quantity' => $quantity,
                     'last_delivery_date' => now(),
                 ]);
             }
@@ -73,10 +87,14 @@ class SupplierController extends Controller
 
     public function edit(Supplier $supplier)
     {
-        $products = Product::all();
-        $selectedProducts = $supplier->products->pluck('id')->toArray();
-        return view('admin.suppliers.edit', compact('supplier', 'products', 'selectedProducts'));
+        $productCategories = \App\Models\ProductCategory::with('products')->get();
+
+        return view('admin.suppliers.edit', [
+            'supplier' => $supplier,
+            'productCategories' => $productCategories,
+        ]);
     }
+
 
     public function update(Request $request, Supplier $supplier)
     {
@@ -90,9 +108,19 @@ class SupplierController extends Controller
                 'supermarkt', 'groothandel', 'boer', 'instelling', 'overheid', 'particulier'
             ])],
             'supplier_number' => ['required', 'string', 'max:20', Rule::unique('suppliers')->ignore($supplier->id)],
-            'products' => ['nullable', 'array'],
-            'products.*' => ['integer', 'exists:products,id'],
+            'products_and_quantities' => ['nullable', 'array'],
+            'products_and_quantities.*' => ['string', 'regex:/^\d+:\d+$/'],
             'is_active' => ['nullable', 'boolean'],
+        ], [
+            'company_name.required' => 'De bedrijfsnaam is verplicht.',
+            'company_name.unique' => 'Deze bedrijfsnaam is al in gebruik.',
+            'contact_name.required' => 'De naam van de contactpersoon is verplicht.',
+            'contact_email.required' => 'Het e-mailadres is verplicht.',
+            'contact_email.email' => 'Voer een geldig e-mailadres in.',
+            'supplier_number.required' => 'Het leveranciersnummer is verplicht.',
+            'supplier_number.unique' => 'Dit leveranciersnummer is al in gebruik.',
+            'supplier_type.required' => 'Selecteer een type leverancier.',
+            'products_and_quantities.*.regex' => 'Productinformatie is ongeldig.',
         ]);
 
         $supplier->update([
@@ -106,18 +134,27 @@ class SupplierController extends Controller
             'is_active' => $request->has('is_active'),
         ]);
 
-        $supplier->products()->sync([]);
-        if (!empty($validated['products'])) {
-            foreach ($validated['products'] as $productId) {
-                $supplier->products()->attach($productId, [
-                    'stock_quantity' => 0,
+        // Producten synchroniseren
+        $productData = [];
+        if (!empty($validated['products_and_quantities'])) {
+            foreach ($validated['products_and_quantities'] as $entry) {
+                [$productId, $stock] = explode(':', $entry);
+                $productId = (int) $productId;
+                $stock = max(0, (int) $stock); // garandeer >= 0
+                $productData[$productId] = [
+                    'stock_quantity' => $stock,
                     'last_delivery_date' => now(),
-                ]);
+                ];
             }
         }
 
-        return redirect()->route('admin.suppliers.index')->with('success', 'Leverancier bijgewerkt.');
+        $supplier->products()->sync($productData);
+
+        return redirect()
+            ->route('admin.suppliers.index')
+            ->with('success', 'Leverancier succesvol bijgewerkt.');
     }
+
 
     public function destroy(Supplier $supplier)
     {
