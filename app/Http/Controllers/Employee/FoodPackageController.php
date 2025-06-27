@@ -29,8 +29,7 @@ class FoodPackageController extends Controller
 
         FoodPackage::create($validated);
 
-        return redirect()->route('employee.food_packages.index')->with('success', 'Pakket aangemaakt.');
-    }
+        return redirect()->route('employee.food_packages.index')->with('success', 'Voedselpakket succesvol aangemaakt.');    }
 
 
     public function show(FoodPackage $foodPackage)
@@ -64,7 +63,7 @@ class FoodPackageController extends Controller
         $data['is_active'] = $request->has('is_active') ? 1 : 0;
         $foodPackage->update($data);
 
-        return redirect()->route('employee.food_packages.index')->with('success', 'Package updated.');
+        return redirect()->route('employee.food_packages.index')->with('success', 'Voedselpakket succesvol bijgewerkt.');
     }
 
     public function destroy(FoodPackage $foodPackage)

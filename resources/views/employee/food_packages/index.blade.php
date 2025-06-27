@@ -1,11 +1,16 @@
+<script src="https://cdn.tailwindcss.com"></script>
+
 @extends('dashboard')
 
 @section('dashboard-content')
     <h1 class="text-xl font-semibold text-center mb-6">Alle Voedselpakketen</h1>
 
     @if (session('success'))
-        <div class="text-green-600 mb-4 text-center">{{ session('success') }}</div>
+        <div class="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded mb-6 max-w-2xl mx-auto text-sm shadow-sm">
+            <p class="font-medium">{{ session('success') }}</p>
+        </div>
     @endif
+
 
     <div class="flex justify-end mb-4">
         <a href="{{ route('employee.food_packages.create') }}"
@@ -13,6 +18,7 @@
             + Maak Voedselpakket
         </a>
     </div>
+
 
     <div class="overflow-x-auto">
         <table class="w-full border-collapse border border-gray-300 text-sm text-left">
