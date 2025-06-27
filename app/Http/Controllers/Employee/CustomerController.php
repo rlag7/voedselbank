@@ -15,7 +15,6 @@ class CustomerController extends Controller
         return view('employee.customers.index', compact('customers'));
     }
 
-
     public function create()
     {
         $people = Person::all();
@@ -25,7 +24,15 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'person_id' => 'required|exists:people,id',
+            'person_id' => [
+                'required',
+                'exists:people,id',
+                function ($attribute, $value, $fail) {
+                    if (Customer::where('person_id', $value)->exists()) {
+                        $fail('Dit e-mailadres is al gekoppeld aan een bestaande klant.');
+                    }
+                }
+            ],
             'number_of_adults' => 'required|integer|min:0',
             'number_of_children' => 'required|integer|min:0',
             'number_of_babies' => 'required|integer|min:0',
@@ -36,7 +43,8 @@ class CustomerController extends Controller
 
         Customer::create($request->all());
 
-        return redirect()->route('employee.customers.index')->with('success', 'Customer created.');
+        return redirect()->route('employee.customers.index')
+            ->with('success', 'Klant succesvol toegevoegd.');
     }
 
     public function show(Customer $customer)
@@ -46,12 +54,22 @@ class CustomerController extends Controller
 
     public function edit(Customer $customer)
     {
+        if (!$customer->is_active) {
+            return redirect()->route('employee.customers.index')
+                ->with('error', 'Deze klant is gedeactiveerd en kan niet worden aangepast.');
+        }
+
         $people = Person::all();
         return view('employee.customers.edit', compact('customer', 'people'));
     }
 
     public function update(Request $request, Customer $customer)
     {
+        if (!$customer->is_active) {
+            return redirect()->route('employee.customers.index')
+                ->with('error', 'Deze klant is gedeactiveerd en kan niet worden aangepast.');
+        }
+
         $request->validate([
             'person_id' => 'required|exists:people,id',
             'number_of_adults' => 'required|integer|min:0',
@@ -64,12 +82,29 @@ class CustomerController extends Controller
 
         $customer->update($request->all());
 
-        return redirect()->route('employee.customers.index')->with('success', 'Customer updated.');
+        return redirect()->route('employee.customers.index')->with('success', 'Klantgegevens succesvol bijgewerkt.');
     }
 
     public function destroy(Customer $customer)
     {
+        if ($customer->is_active) {
+            return redirect()->route('employee.customers.index')
+                ->with('error', 'Actieve klantaccounts kunnen niet worden verwijderd.');
+        }
+
         $customer->delete();
-        return redirect()->route('employee.customers.index')->with('success', 'Customer deleted.');
+
+        return redirect()->route('employee.customers.index')
+            ->with('success', 'Klant succesvol verwijderd.');
+    }
+
+
+    public function toggleActive(Customer $customer)
+    {
+        $customer->is_active = !$customer->is_active;
+        $customer->save();
+
+        return redirect()->route('employee.customers.index')
+            ->with('success', 'Klantstatus succesvol aangepast.');
     }
 }

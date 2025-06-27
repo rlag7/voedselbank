@@ -20,9 +20,11 @@ return new class extends Migration
             $table->boolean('is_vegan');
             $table->boolean('is_vegetarian');
             $table->boolean('no_pork');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
+
 
 
     /**

@@ -19,6 +19,7 @@ class CustomerSeeder extends Seeder
                 'is_vegan' => rand(0, 1),
                 'is_vegetarian' => rand(0, 1),
                 'no_pork' => rand(0, 1),
+                'active' => rand(0, 1),
             ]);
         });
     }
