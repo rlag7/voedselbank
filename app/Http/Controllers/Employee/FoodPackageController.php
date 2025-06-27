@@ -50,7 +50,7 @@ class FoodPackageController extends Controller
                 ->with('success', 'Pakket aangemaakt.');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->withErrors(['general' => 'Fout bij opslaan, probeer opnieuw.'])
+                ->withErrors(['general' => 'Datum kan niet ouder zijn huidge datum.'])
                 ->withInput();
         }
     }
