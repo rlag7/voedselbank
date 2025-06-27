@@ -23,18 +23,15 @@ class FoodPackageController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'composition_date' => 'required|date',
-            'distribution_date' => 'nullable|date',
-        ]);
+        $validated = $request->validate($this->rules(), $this->messages());
 
-        $data = $request->only(['customer_id', 'composition_date', 'distribution_date']);
-        $data['is_active'] = $request->has('is_active') ? 1 : 0;
-        FoodPackage::create($data);
+        $validated['is_active'] = $request->has('is_active') ? 1 : 0;
 
-        return redirect()->route('employee.food_packages.index')->with('success', 'Package created.');
+        FoodPackage::create($validated);
+
+        return redirect()->route('employee.food_packages.index')->with('success', 'Pakket aangemaakt.');
     }
+
 
     public function show(FoodPackage $foodPackage)
     {
@@ -51,8 +48,16 @@ class FoodPackageController extends Controller
     {
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
-            'composition_date' => 'required|date',
-            'distribution_date' => 'nullable|date',
+            'composition_date' => ['required', 'date', 'after_or_equal:today'],
+            'distribution_date' => ['nullable', 'date', 'after_or_equal:composition_date'],
+        ], [
+            'customer_id.required' => 'Selecteer een klant.',
+            'customer_id.exists' => 'De geselecteerde klant is ongeldig.',
+            'composition_date.required' => 'De samenstel datum is verplicht.',
+            'composition_date.date' => 'Voer een geldige samenstel datum in.',
+            'composition_date.after_or_equal' => 'De samenstel datum mag niet in het verleden liggen.',
+            'distribution_date.date' => 'Voer een geldige distributiedatum in.',
+            'distribution_date.after_or_equal' => 'De distributiedatum mag niet vóór de samenstel datum liggen.',
         ]);
 
         $data = $request->only(['customer_id', 'composition_date', 'distribution_date']);
@@ -67,4 +72,28 @@ class FoodPackageController extends Controller
         $foodPackage->delete();
         return redirect()->route('employee.food_packages.index')->with('success', 'Package deleted.');
     }
+
+    private function rules(): array
+    {
+        return [
+            'customer_id' => 'required|exists:customers,id',
+            'composition_date' => ['required', 'date', 'after_or_equal:today'],
+            'distribution_date' => ['nullable', 'date', 'after_or_equal:composition_date'],
+        ];
+    }
+
+    private function messages(): array
+    {
+        return [
+            'customer_id.required' => 'Selecteer een klant.',
+            'customer_id.exists' => 'De geselecteerde klant is ongeldig.',
+            'composition_date.required' => 'De samenstel datum is verplicht.',
+            'composition_date.date' => 'Voer een geldige samenstel datum in.',
+            'composition_date.after_or_equal' => 'De samenstel datum mag niet in het verleden liggen.',
+            'distribution_date.date' => 'Voer een geldige distributiedatum in.',
+            'distribution_date.after_or_equal' => 'De distributiedatum mag niet vóór de samenstel datum liggen.',
+        ];
+    }
+
 }
+
