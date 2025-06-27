@@ -5,11 +5,14 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use Faker\Factory as Faker;
 
 class ProductSeeder extends Seeder
 {
     public function run(): void
     {
+        $faker = Faker::create();
+
         $producten = [
             'Aardappelen, groente, fruit' => ['Appels', 'Bananen', 'Tomaten', 'Komkommer', 'Aardappelen'],
             'Kaas, vleeswaren' => ['Goudse kaas', 'Brie', 'Salami', 'Kipfilet', 'Ham'],
@@ -25,18 +28,23 @@ class ProductSeeder extends Seeder
         foreach ($producten as $categorieNaam => $items) {
             $category = ProductCategory::where('name', $categorieNaam)->first();
 
+            if (!$category) {
+                echo "⚠️ Categorie '$categorieNaam' niet gevonden. Sla over...\n";
+                continue;
+            }
+
             foreach ($items as $productNaam) {
                 Product::create([
-                    'category_id' => $category->id,
-                    'name' => $productNaam,
-                    'ean' => fake()->unique()->ean13(),
-                    'stock_quantity' => fake()->numberBetween(10, 100),
-                    'houdbaarheiddatum' => fake()->optional()->dateTimeBetween('now', '+6 months'),
-                    'omschrijving' => fake()->sentence(6),
-                    'status' => 'actief',
-                    'isactief' => true,
-                    'opmerking' => fake()->optional()->sentence(),
-                    'soortalergie' => fake()->optional()->randomElement(['gluten', 'noten', 'geen']),
+                    'category_id'        => $category->id,
+                    'name'               => $productNaam,
+                    'ean'                => $faker->unique()->ean13(),
+                    'stock_quantity'     => $faker->numberBetween(10, 100),
+                    'houdbaarheiddatum'  => $faker->optional()->dateTimeBetween('now', '+6 months'),
+                    'omschrijving'       => $faker->sentence(6),
+                    'status'             => 'actief',
+                    'isactief'           => true,
+                    'opmerking'          => $faker->optional()->sentence(),
+                    'soortalergie'       => $faker->optional()->randomElement(['gluten', 'noten', 'geen']),
                 ]);
             }
         }
