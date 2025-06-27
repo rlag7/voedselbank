@@ -17,15 +17,20 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             PersonSeeder::class,
             UserSeeder::class,
-            CustomerSeeder::class,
             AddressSeeder::class,
-            SupplierSeeder::class,
-            ProductCategorySeeder::class,
-            ProductSeeder::class,
+
+            ProductCategorySeeder::class, // categorieën vóór producten
+            ProductSeeder::class,         // producten vóór leveranciers
+            SupplierSeeder::class,        // leveranciers kunnen producten krijgen
+
             AllergySeeder::class,
+
+            CustomerSeeder::class,
             CustomerAllergySeeder::class,
+
             FoodPackageSeeder::class,
             FoodPackageProductSeeder::class,
         ]);
+
     }
 }
