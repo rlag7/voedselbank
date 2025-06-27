@@ -26,8 +26,11 @@
         @forelse($packages as $package)
             <tr class="border-t hover:bg-gray-50">
                 <td class="p-4">{{ $package->customer->person->name ?? 'Onbekend' }}</td>
-                <td class="p-4">{{ $package->composition_date }}</td>
-                <td class="p-4">{{ $package->distribution_date ?? 'In afwachting' }}</td>
+                <td class="p-4">{{ \Carbon\Carbon::parse($package->composition_date)->format('d-m-Y') }}</td>
+                <td class="p-4">
+                    {{ $package->distribution_date ? \Carbon\Carbon::parse($package->distribution_date)->format('d-m-Y') : 'In afwachting' }}
+                </td>
+
                 <td class="p-4">{{ $package->is_active ? 'Ja' : 'Nee' }}</td>
                 <td class="p-4 flex justify-center space-x-2">
                     <a href="{{ route('employee.food_packages.show', $package) }}" class="text-gray-600 hover:text-black">Bekijken</a>
