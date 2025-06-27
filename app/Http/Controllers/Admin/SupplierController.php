@@ -19,57 +19,53 @@ class SupplierController extends Controller
 
     public function create()
     {
-        $productCategories = \App\Models\ProductCategory::with('products')->get();
+        $productCategories = ProductCategory::with('products')->get();
         return view('admin.suppliers.create', compact('productCategories'));
     }
-
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'company_name' => ['required', 'string', 'max:100', Rule::unique('suppliers')],
-            'address' => ['nullable', 'string', 'max:200'],
+            'company_name' => ['required', 'string', 'max:100', 'regex:/^(?!\d+$).*/', Rule::unique('suppliers')],
+            'address' => ['required', 'string', 'max:200', 'regex:/[a-zA-Z]/'],
             'contact_name' => ['required', 'string', 'max:100'],
-            'contact_email' => ['required', 'email', 'max:100'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'supplier_type' => ['required', Rule::in([
-                'supermarkt', 'groothandel', 'boer', 'instelling', 'overheid', 'particulier'
-            ])],
-            'supplier_number' => ['required', 'string', 'max:20', Rule::unique('suppliers')],
+            'contact_email' => ['required', 'email:dns', 'max:100'],
+            'phone' => ['required', 'regex:/^\+?[0-9]{7,15}$/'],
+            'supplier_type' => ['required', Rule::in(['supermarkt', 'groothandel', 'boer', 'instelling', 'overheid', 'particulier'])],
             'products_and_quantities' => ['nullable', 'array'],
-            'products_and_quantities.*' => ['string', 'regex:/^\d+:\d+$/'],
+            'products_and_quantities.*' => ['regex:/^\d+:(?:[1-9][0-9]{0,2}|1000)$/'],
             'is_active' => ['nullable', 'boolean'],
         ], [
             'company_name.required' => 'De bedrijfsnaam is verplicht.',
+            'company_name.regex' => 'De bedrijfsnaam mag niet alleen uit cijfers bestaan.',
             'company_name.unique' => 'Deze bedrijfsnaam bestaat al.',
+            'address.required' => 'Het adres is verplicht.',
+            'address.regex' => 'Voer een geldig adres in met letters.',
             'contact_name.required' => 'De naam van de contactpersoon is verplicht.',
             'contact_email.required' => 'Het e-mailadres is verplicht.',
             'contact_email.email' => 'Voer een geldig e-mailadres in.',
+            'phone.required' => 'Het telefoonnummer is verplicht.',
+            'phone.regex' => 'Voer een geldig telefoonnummer in.',
             'supplier_type.required' => 'Kies een type leverancier.',
-            'supplier_number.required' => 'Het leveranciersnummer is verplicht.',
-            'supplier_number.unique' => 'Dit leveranciersnummer bestaat al.',
-            'products_and_quantities.*.regex' => 'Producten en aantallen moeten geldig zijn.',
+            'products_and_quantities.*.regex' => 'Productaantal moet tussen 1 en 1000 liggen.',
         ]);
 
         $supplier = Supplier::create([
             'company_name' => $validated['company_name'],
-            'address' => $validated['address'] ?? null,
+            'address' => $validated['address'],
             'contact_name' => $validated['contact_name'],
             'contact_email' => $validated['contact_email'],
-            'phone' => $validated['phone'] ?? null,
+            'phone' => $validated['phone'],
             'supplier_type' => $validated['supplier_type'],
-            'supplier_number' => $validated['supplier_number'],
+            'supplier_number' => strtoupper('SUP-' . rand(1000, 9999)),
             'is_active' => $request->has('is_active'),
         ]);
 
         if (!empty($validated['products_and_quantities'])) {
             foreach ($validated['products_and_quantities'] as $entry) {
                 [$productId, $quantity] = explode(':', $entry);
-                $productId = (int) $productId;
-                $quantity = max((int) $quantity, 0); // voorkom negatieve aantallen
-
-                $supplier->products()->attach($productId, [
-                    'stock_quantity' => $quantity,
+                $supplier->products()->attach((int)$productId, [
+                    'stock_quantity' => (int)$quantity,
                     'last_delivery_date' => now(),
                 ]);
             }
@@ -77,7 +73,6 @@ class SupplierController extends Controller
 
         return redirect()->route('admin.suppliers.index')->with('success', 'Leverancier succesvol toegevoegd.');
     }
-
 
     public function show(Supplier $supplier)
     {
@@ -87,7 +82,7 @@ class SupplierController extends Controller
 
     public function edit(Supplier $supplier)
     {
-        $productCategories = \App\Models\ProductCategory::with('products')->get();
+        $productCategories = ProductCategory::with('products')->get();
 
         return view('admin.suppliers.edit', [
             'supplier' => $supplier,
@@ -95,54 +90,50 @@ class SupplierController extends Controller
         ]);
     }
 
-
     public function update(Request $request, Supplier $supplier)
     {
         $validated = $request->validate([
-            'company_name' => ['required', 'string', 'max:100', Rule::unique('suppliers')->ignore($supplier->id)],
-            'address' => ['nullable', 'string', 'max:200'],
+            'company_name' => ['required', 'string', 'max:100', 'regex:/^(?!\d+$).*/', Rule::unique('suppliers')->ignore($supplier->id)],
+            'address' => ['required', 'string', 'max:200', 'regex:/[a-zA-Z]/'],
             'contact_name' => ['required', 'string', 'max:100'],
-            'contact_email' => ['required', 'email', 'max:100'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'supplier_type' => ['required', Rule::in([
-                'supermarkt', 'groothandel', 'boer', 'instelling', 'overheid', 'particulier'
-            ])],
-            'supplier_number' => ['required', 'string', 'max:20', Rule::unique('suppliers')->ignore($supplier->id)],
+            'contact_email' => ['required', 'email:dns', 'max:100'],
+            'phone' => ['required', 'regex:/^\+?[0-9]{7,15}$/'],
+            'supplier_type' => ['required', Rule::in(['supermarkt', 'groothandel', 'boer', 'instelling', 'overheid', 'particulier'])],
             'products_and_quantities' => ['nullable', 'array'],
-            'products_and_quantities.*' => ['string', 'regex:/^\d+:\d+$/'],
+            'products_and_quantities.*' => ['regex:/^\d+:(?:[1-9][0-9]{0,2}|1000)$/'],
             'is_active' => ['nullable', 'boolean'],
         ], [
             'company_name.required' => 'De bedrijfsnaam is verplicht.',
             'company_name.unique' => 'Deze bedrijfsnaam is al in gebruik.',
+            'company_name.regex' => 'De bedrijfsnaam mag niet alleen uit cijfers bestaan.',
+            'address.required' => 'Het adres is verplicht.',
+            'address.regex' => 'Voer een geldig adres in met letters.',
             'contact_name.required' => 'De naam van de contactpersoon is verplicht.',
             'contact_email.required' => 'Het e-mailadres is verplicht.',
             'contact_email.email' => 'Voer een geldig e-mailadres in.',
-            'supplier_number.required' => 'Het leveranciersnummer is verplicht.',
-            'supplier_number.unique' => 'Dit leveranciersnummer is al in gebruik.',
+            'phone.required' => 'Het telefoonnummer is verplicht.',
+            'phone.regex' => 'Voer een geldig telefoonnummer in.',
             'supplier_type.required' => 'Selecteer een type leverancier.',
-            'products_and_quantities.*.regex' => 'Productinformatie is ongeldig.',
+            'products_and_quantities.*.regex' => 'Productaantal moet tussen 1 en 1000 liggen.',
         ]);
 
         $supplier->update([
             'company_name' => $validated['company_name'],
-            'address' => $validated['address'] ?? null,
+            'address' => $validated['address'],
             'contact_name' => $validated['contact_name'],
             'contact_email' => $validated['contact_email'],
-            'phone' => $validated['phone'] ?? null,
+            'phone' => $validated['phone'],
             'supplier_type' => $validated['supplier_type'],
-            'supplier_number' => $validated['supplier_number'],
             'is_active' => $request->has('is_active'),
         ]);
 
-        // Producten synchroniseren
+        // Sync producten
         $productData = [];
         if (!empty($validated['products_and_quantities'])) {
             foreach ($validated['products_and_quantities'] as $entry) {
                 [$productId, $stock] = explode(':', $entry);
-                $productId = (int) $productId;
-                $stock = max(0, (int) $stock); // garandeer >= 0
-                $productData[$productId] = [
-                    'stock_quantity' => $stock,
+                $productData[(int)$productId] = [
+                    'stock_quantity' => (int)$stock,
                     'last_delivery_date' => now(),
                 ];
             }
@@ -150,17 +141,13 @@ class SupplierController extends Controller
 
         $supplier->products()->sync($productData);
 
-        return redirect()
-            ->route('admin.suppliers.index')
-            ->with('success', 'Leverancier succesvol bijgewerkt.');
+        return redirect()->route('admin.suppliers.index')->with('success', 'Leverancier succesvol bijgewerkt.');
     }
-
 
     public function destroy(Supplier $supplier)
     {
         if ($supplier->is_active) {
-            return redirect()->route('admin.suppliers.index')
-                ->with('error', 'Deze leverancier is actief en kan niet worden verwijderd.');
+            return redirect()->route('admin.suppliers.index')->with('error', 'Deze leverancier is actief en kan niet worden verwijderd.');
         }
 
         $supplier->products()->detach();

@@ -2,6 +2,7 @@
 
 @section('dashboard-content')
     <div class="mx-auto w-full md:w-1/2">
+        <script src="https://cdn.tailwindcss.com"></script>
         <h1 class="text-2xl font-semibold mb-4">Nieuwe Leverancier Toevoegen</h1>
 
         @if ($errors->any())
@@ -17,27 +18,31 @@
         <form method="POST" action="{{ route('admin.suppliers.store') }}" class="space-y-4">
             @csrf
 
-            <!-- standaard velden -->
             <div>
                 <label class="block mb-1">Bedrijfsnaam *</label>
                 <input type="text" name="company_name" class="w-full border rounded px-3 py-2" required>
             </div>
+
             <div>
-                <label class="block mb-1">Adres</label>
-                <input type="text" name="address" class="w-full border rounded px-3 py-2">
+                <label class="block mb-1">Adres *</label>
+                <input type="text" name="address" class="w-full border rounded px-3 py-2" required>
             </div>
+
             <div>
                 <label class="block mb-1">Contactpersoon *</label>
                 <input type="text" name="contact_name" class="w-full border rounded px-3 py-2" required>
             </div>
+
             <div>
                 <label class="block mb-1">E-mailadres *</label>
                 <input type="email" name="contact_email" class="w-full border rounded px-3 py-2" required>
             </div>
+
             <div>
-                <label class="block mb-1">Telefoon</label>
-                <input type="text" name="phone" class="w-full border rounded px-3 py-2">
+                <label class="block mb-1">Telefoon *</label>
+                <input type="text" name="phone" class="w-full border rounded px-3 py-2" required>
             </div>
+
             <div>
                 <label class="block mb-1">Type leverancier *</label>
                 <select name="supplier_type" class="w-full border rounded px-3 py-2" required>
@@ -50,10 +55,7 @@
                     <option value="particulier">Particulier</option>
                 </select>
             </div>
-            <div>
-                <label class="block mb-1">Leveranciersnummer *</label>
-                <input type="text" name="supplier_number" class="w-full border rounded px-3 py-2" required>
-            </div>
+
             <div>
                 <label class="inline-flex items-center">
                     <input type="checkbox" name="is_active" class="mr-2" value="1">
@@ -61,7 +63,6 @@
                 </label>
             </div>
 
-            <!-- Product selectie -->
             <hr class="my-4">
             <h2 class="text-xl font-semibold mb-2">Producten koppelen</h2>
 
@@ -77,7 +78,9 @@
 
             <div id="selected-products-area" class="space-y-4 mt-4"></div>
 
-            <button type="button" id="add-category-btn" class="text-blue-600 hover:underline text-sm mt-2">+ Voeg extra categorie toe</button>
+            <button type="button" id="add-category-btn" class="text-blue-600 hover:underline text-sm mt-2">
+                + Voeg extra categorie toe
+            </button>
 
             <button type="submit" class="block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-6 w-full">
                 Opslaan
@@ -125,7 +128,8 @@
 
             const quantityInput = document.createElement('input');
             quantityInput.type = 'number';
-            quantityInput.min = '0';
+            quantityInput.min = '1';
+            quantityInput.max = '1000';
             quantityInput.value = '1';
             quantityInput.required = true;
             quantityInput.className = 'w-24 border rounded px-2 py-1';
@@ -140,7 +144,6 @@
             };
 
             select.addEventListener('change', () => {
-                selectedProductIds.add(parseInt(select.value));
                 updateHiddenInput();
             });
 
@@ -167,7 +170,6 @@
 
             selectedProductsArea.appendChild(container);
 
-            // trigger immediately
             if (select.value) selectedProductIds.add(parseInt(select.value));
         }
 

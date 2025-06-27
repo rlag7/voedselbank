@@ -1,6 +1,7 @@
 @extends('dashboard')
 
 @section('dashboard-content')
+    <script src="https://cdn.tailwindcss.com"></script>
     <h1 class="text-2xl font-semibold mb-4">Supplier Details</h1>
 
     <div class="space-y-2 bg-white p-6 rounded shadow">

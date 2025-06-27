@@ -19,7 +19,7 @@
 
         <div>
             <label class="block mb-1">Bedrijfsnaam *</label>
-            <input type="text" name="company_name" value="{{ old('company_name', $supplier->company_name) }}" class="w-full border rounded px-3 py-2" required>
+            <input type="text" name="company_name" value="{{ old('company_name', $supplier->company_name) }}" class="w-full border rounded px-3 py-2">
         </div>
 
         <div>
@@ -29,12 +29,12 @@
 
         <div>
             <label class="block mb-1">Contactpersoon *</label>
-            <input type="text" name="contact_name" value="{{ old('contact_name', $supplier->contact_name) }}" class="w-full border rounded px-3 py-2" required>
+            <input type="text" name="contact_name" value="{{ old('contact_name', $supplier->contact_name) }}" class="w-full border rounded px-3 py-2">
         </div>
 
         <div>
             <label class="block mb-1">E-mailadres *</label>
-            <input type="email" name="contact_email" value="{{ old('contact_email', $supplier->contact_email) }}" class="w-full border rounded px-3 py-2" required>
+            <input type="email" name="contact_email" value="{{ old('contact_email', $supplier->contact_email) }}" class="w-full border rounded px-3 py-2">
         </div>
 
         <div>
@@ -44,7 +44,7 @@
 
         <div>
             <label class="block mb-1">Type leverancier *</label>
-            <select name="supplier_type" class="w-full border rounded px-3 py-2" required>
+            <select name="supplier_type" class="w-full border rounded px-3 py-2">
                 @foreach(['supermarkt', 'groothandel', 'boer', 'instelling', 'overheid', 'particulier'] as $type)
                     <option value="{{ $type }}" @selected($supplier->supplier_type === $type)>{{ ucfirst($type) }}</option>
                 @endforeach
@@ -53,7 +53,7 @@
 
         <div>
             <label class="block mb-1">Leveranciersnummer *</label>
-            <input type="text" name="supplier_number" value="{{ old('supplier_number', $supplier->supplier_number) }}" class="w-full border rounded px-3 py-2" required>
+            <input type="text" name="supplier_number" value="{{ old('supplier_number', $supplier->supplier_number) }}" class="w-full border rounded px-3 py-2">
         </div>
 
         <div>
@@ -167,9 +167,13 @@
         function syncStock(input) {
             const wrapper = input.closest('.product-select-group');
             const select = wrapper.querySelector('select');
-            const selected = select.value.split(':')[0];
+            const selectedOption = select.options[select.selectedIndex];
+
+            const productId = selectedOption.value.split(':')[0];
             const quantity = Math.max(0, parseInt(input.value) || 0);
-            select.value = `${selected}:${quantity}`;
+
+            selectedOption.value = `${productId}:${quantity}`;
+            select.value = selectedOption.value;
         }
 
         function removeProduct(btn) {

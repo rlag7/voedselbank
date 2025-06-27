@@ -1,11 +1,16 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Leveranciers Overzicht</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
 @extends('dashboard')
 
 @section('dashboard-content')
     <h1 class="text-2xl font-semibold mb-4">Alle Leveranciers</h1>
-
-    @if (session('success'))
-        <div class="text-green-600 mb-4">{{ session('success') }}</div>
-    @endif
 
     <a href="{{ route('admin.suppliers.create') }}"
        class="bg-blue-600 text-white px-4 py-2 rounded mb-4 inline-block hover:bg-blue-700 transition">
@@ -22,6 +27,7 @@
                     <th class="p-3 text-left">Email</th>
                     <th class="p-3 text-left">Type</th>
                     <th class="p-3 text-left">Leveranciersnummer</th>
+                    <th class="p-3 text-left">Actief</th>
                     <th class="p-3 text-left">Producten</th>
                     <th class="p-3 text-left">Acties</th>
                 </tr>
@@ -34,6 +40,13 @@
                         <td class="p-3">{{ $supplier->contact_email }}</td>
                         <td class="p-3">{{ ucfirst($supplier->supplier_type) }}</td>
                         <td class="p-3">{{ $supplier->supplier_number }}</td>
+                        <td class="p-3">
+                            @if ($supplier->is_active)
+                                <span class="text-green-600 font-semibold">Ja</span>
+                            @else
+                                <span class="text-gray-500">Nee</span>
+                            @endif
+                        </td>
                         <td class="p-3">
                             @forelse($supplier->products as $product)
                                 <div class="truncate" title="{{ $product->name }}">
@@ -60,4 +73,29 @@
     @else
         <p class="text-gray-500">Er zijn geen leveranciers beschikbaar.</p>
     @endif
+
+    {{-- Modal voor foutmelding --}}
+    @if (session('error'))
+        <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div class="bg-red-500 text-white p-6 rounded shadow text-center w-96">
+                <p>{{ session('error') }}</p>
+                <button onclick="this.closest('div').parentElement.remove()"
+                        class="mt-4 px-4 py-2 bg-white text-red-600 rounded">Sluiten</button>
+            </div>
+        </div>
+    @endif
+
+    {{-- Modal voor succesmelding --}}
+    @if (session('success'))
+        <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div class="bg-green-500 text-white p-6 rounded shadow text-center w-96">
+                <p>{{ session('success') }}</p>
+                <button onclick="this.closest('div').parentElement.remove()"
+                        class="mt-4 px-4 py-2 bg-white text-green-600 rounded">Sluiten</button>
+            </div>
+        </div>
+    @endif
 @endsection
+
+</body>
+</html>
