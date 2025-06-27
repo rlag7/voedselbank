@@ -7,6 +7,7 @@ use App\Models\FoodPackage;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\Product;
 
 class FoodPackageController extends Controller
 {
@@ -19,9 +20,9 @@ class FoodPackageController extends Controller
 
     public function create()
     {
-        // Haal alle klanten op voor de dropdown
         $customers = Customer::all();
-        return view('employee.food_packages.create', compact('customers'));
+        $products = Product::all();
+        return view('employee.food_packages.create', compact('customers', 'products'));
     }
 
     public function store(Request $request)
@@ -67,7 +68,8 @@ class FoodPackageController extends Controller
     public function edit(FoodPackage $foodPackage)
     {
         $customers = Customer::all();
-        return view('employee.food_packages.edit', compact('foodPackage', 'customers'));
+        $products = Product::all();
+        return view('employee.food_packages.edit', compact('foodPackage', 'customers', 'products'));
     }
 
     public function update(Request $request, FoodPackage $foodPackage)

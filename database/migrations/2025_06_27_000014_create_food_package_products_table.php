@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('food_package_product', function (Blueprint $table) {
             $table->foreignId('food_package_id')->constrained('food_packages')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-            $table->unsignedInteger('quantity');
+            $table->unsignedInteger('quantity')->default(0);
             $table->primary(['food_package_id', 'product_id']);
         });
     }

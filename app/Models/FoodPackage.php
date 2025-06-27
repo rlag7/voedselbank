@@ -10,17 +10,11 @@ class FoodPackage extends Model
         'customer_id',
         'composition_date',
         'distribution_date',
-        'is_active',
+        'is_active',  // moet hier ook in staan!
     ];
 
     public function customer()
     {
         return $this->belongsTo(Customer::class);
-    }
-
-    public function products()
-    {
-        return $this->belongsToMany(Product::class, 'food_package_product')
-            ->withPivot('quantity');
     }
 }

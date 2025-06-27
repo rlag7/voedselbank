@@ -64,7 +64,6 @@
                     Annuleren
                 </a>
             </div>
-
         </form>
     </div>
 @endsection
