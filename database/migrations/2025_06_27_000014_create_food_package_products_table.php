@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->unsignedInteger('quantity')->default(0);
             $table->primary(['food_package_id', 'product_id']);
+            $table->timestamps();
         });
     }
 
