@@ -18,31 +18,43 @@
         <form method="POST" action="{{ route('admin.suppliers.store') }}" class="space-y-4">
             @csrf
 
+            <!-- standaard velden -->
             <div>
                 <label class="block mb-1">Bedrijfsnaam *</label>
                 <input type="text" name="company_name" class="w-full border rounded px-3 py-2" required>
             </div>
 
-            <div>
-                <label class="block mb-1">Adres *</label>
-                <input type="text" name="address" class="w-full border rounded px-3 py-2" required>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block mb-1">Straat *</label>
+                    <input type="text" name="street" class="w-full border rounded px-3 py-2" required>
+                </div>
+                <div>
+                    <label class="block mb-1">Huisnummer *</label>
+                    <input type="number" name="house_number" class="w-full border rounded px-3 py-2" required min="1">
+                </div>
+                <div>
+                    <label class="block mb-1">Postcode *</label>
+                    <input type="text" name="postal_code" class="w-full border rounded px-3 py-2" required>
+                </div>
+                <div>
+                    <label class="block mb-1">Stad *</label>
+                    <input type="text" name="city" class="w-full border rounded px-3 py-2" required>
+                </div>
             </div>
 
             <div>
                 <label class="block mb-1">Contactpersoon *</label>
                 <input type="text" name="contact_name" class="w-full border rounded px-3 py-2" required>
             </div>
-
             <div>
                 <label class="block mb-1">E-mailadres *</label>
                 <input type="email" name="contact_email" class="w-full border rounded px-3 py-2" required>
             </div>
-
             <div>
                 <label class="block mb-1">Telefoon *</label>
                 <input type="text" name="phone" class="w-full border rounded px-3 py-2" required>
             </div>
-
             <div>
                 <label class="block mb-1">Type leverancier *</label>
                 <select name="supplier_type" class="w-full border rounded px-3 py-2" required>
@@ -55,7 +67,6 @@
                     <option value="particulier">Particulier</option>
                 </select>
             </div>
-
             <div>
                 <label class="inline-flex items-center">
                     <input type="checkbox" name="is_active" class="mr-2" value="1">
@@ -63,6 +74,7 @@
                 </label>
             </div>
 
+            <!-- Product selectie -->
             <hr class="my-4">
             <h2 class="text-xl font-semibold mb-2">Producten koppelen</h2>
 
@@ -78,9 +90,7 @@
 
             <div id="selected-products-area" class="space-y-4 mt-4"></div>
 
-            <button type="button" id="add-category-btn" class="text-blue-600 hover:underline text-sm mt-2">
-                + Voeg extra categorie toe
-            </button>
+            <button type="button" id="add-category-btn" class="text-blue-600 hover:underline text-sm mt-2">+ Voeg extra categorie toe</button>
 
             <button type="submit" class="block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-6 w-full">
                 Opslaan
@@ -144,6 +154,7 @@
             };
 
             select.addEventListener('change', () => {
+                selectedProductIds.add(parseInt(select.value));
                 updateHiddenInput();
             });
 
@@ -170,6 +181,7 @@
 
             selectedProductsArea.appendChild(container);
 
+            // trigger immediately
             if (select.value) selectedProductIds.add(parseInt(select.value));
         }
 
