@@ -8,7 +8,7 @@ class Customer extends Model
 {
     protected $fillable = [
         'person_id', 'number_of_adults', 'number_of_children', 'number_of_babies',
-        'is_vegan', 'is_vegetarian', 'no_pork'
+        'is_vegan', 'is_vegetarian', 'no_pork', 'is_active'
     ];
 
     public function person()
