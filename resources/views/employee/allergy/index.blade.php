@@ -4,8 +4,26 @@
     <h1 class="text-2xl font-semibold mb-4">All Allergies</h1>
 
     @if (session('success'))
-        <div class="text-green-600 mb-4">{{ session('success') }}</div>
-    @endif
+    <div 
+        class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-lg px-4"
+        x-data="{ show: true }"
+        x-show="show"
+    >
+        <div class="bg-green-100 border border-green-300 text-green-900 px-6 py-4 rounded-lg shadow-md relative">
+            <button 
+                type="button" 
+                class="absolute top-2 right-3 text-xl font-bold text-green-800 hover:text-green-900" 
+                @click="show = false"
+            >
+                &times;
+            </button>
+            <p class="text-base font-medium">
+                {{ session('success') }}
+            </p>
+        </div>
+    </div>
+@endif
+
 
     <a href="{{ route('employee.allergy.create') }}"
        class="bg-blue-600 text-white px-4 py-2 rounded mb-4 inline-block hover:bg-blue-700 transition">
