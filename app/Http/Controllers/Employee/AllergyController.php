@@ -22,7 +22,7 @@ class AllergyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:25',
+            'name' => 'required|string|max:25|unique:allergies,name',
             'description' => 'required|string|max:50',
             'risk' => 'required|string|max:100',
         ]);
@@ -45,7 +45,7 @@ class AllergyController extends Controller
     public function update(Request $request, Allergy $allergy)
     {
         $request->validate([
-            'name' => 'required|string|max:25',
+             'name' => 'required|string|max:25|unique:allergies,name,' . $allergy->id,
             'description' => 'required|string|max:50',
             'risk' => 'required|string|max:100',
         ]);
@@ -58,6 +58,6 @@ class AllergyController extends Controller
     public function destroy(Allergy $allergy)
     {
         $allergy->delete();
-        return redirect()->route('employee.allergy.index')->with('success', 'Allergy deleted.');
+        return redirect()->route('employee.allergy.index')->with('success', 'Allergie succesvol verwijderd.');
     }
 }
