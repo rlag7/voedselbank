@@ -18,8 +18,6 @@ return new class extends Migration
             $table->string('contact_name', 100);
             $table->string('contact_email', 100);
             $table->string('phone', 20)->nullable();
-
-            // 👇 ENUM voor type leverancier
             $table->enum('supplier_type', [
                 'supermarkt',
                 'groothandel',
@@ -28,8 +26,14 @@ return new class extends Migration
                 'overheid',
                 'particulier',
             ]);
-
             $table->string('supplier_number', 20)->unique();
+
+            // ✅ Extra kolommen volgens jouw wensen
+            $table->string('product_name')->nullable();
+            $table->integer('stock_quantity')->default(0);
+            $table->date('last_delivery_date')->nullable();
+            $table->boolean('is_active')->default(false);
+
             $table->timestamps();
         });
     }
