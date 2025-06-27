@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Supplier;
+use App\Models\Product;
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
 
@@ -12,11 +13,16 @@ class SupplierSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        // Alleen geldige ENUM-waarden (uit de migration)
         $types = ['supermarkt', 'groothandel', 'boer', 'instelling', 'overheid', 'particulier'];
+        $products = Product::all();
+
+        if ($products->count() === 0) {
+            $this->command->warn('⚠️ Geen producten gevonden. Seed eerst de producten.');
+            return;
+        }
 
         for ($i = 0; $i < 10; $i++) {
-            Supplier::create([
+            $supplier = Supplier::create([
                 'company_name'    => $faker->company,
                 'address'         => $faker->address,
                 'contact_name'    => $faker->name,
@@ -24,7 +30,17 @@ class SupplierSeeder extends Seeder
                 'phone'           => $faker->optional()->phoneNumber,
                 'supplier_type'   => $faker->randomElement($types),
                 'supplier_number' => strtoupper('SUP-' . $faker->unique()->numerify('####')),
+                'is_active'       => $faker->boolean(80),
             ]);
+
+            $assignedProducts = $products->random(rand(1, 4));
+
+            foreach ($assignedProducts as $product) {
+                $supplier->products()->attach($product->id, [
+                    'stock_quantity'     => $faker->numberBetween(5, 100),
+                    'last_delivery_date' => $faker->dateTimeBetween('-30 days', 'now'),
+                ]);
+            }
         }
     }
 }
