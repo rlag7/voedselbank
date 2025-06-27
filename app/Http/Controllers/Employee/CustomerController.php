@@ -11,9 +11,10 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = Customer::with('person')->get();
+        $customers = Customer::with(['person', 'allergies'])->get();
         return view('employee.customers.index', compact('customers'));
     }
+
 
     public function create()
     {
