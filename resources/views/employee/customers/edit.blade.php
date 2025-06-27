@@ -37,10 +37,20 @@
         </div>
 
         <div class="grid grid-cols-3 gap-4">
-            <label><input type="checkbox" name="is_vegan" value="1" {{ $customer->is_vegan ? 'checked' : '' }}> Vegan</label>
-            <label><input type="checkbox" name="is_vegetarian" value="1" {{ $customer->is_vegetarian ? 'checked' : '' }}> Vegetarian</label>
-            <label><input type="checkbox" name="no_pork" value="1" {{ $customer->no_pork ? 'checked' : '' }}> No Pork</label>
+            <div>
+                <input type="hidden" name="is_vegan" value="0">
+                <label><input type="checkbox" name="is_vegan" value="1" {{ $customer->is_vegan ? 'checked' : '' }}> Vegan</label>
+            </div>
+            <div>
+                <input type="hidden" name="is_vegetarian" value="0">
+                <label><input type="checkbox" name="is_vegetarian" value="1" {{ $customer->is_vegetarian ? 'checked' : '' }}> Vegetarian</label>
+            </div>
+            <div>
+                <input type="hidden" name="no_pork" value="0">
+                <label><input type="checkbox" name="no_pork" value="1" {{ $customer->no_pork ? 'checked' : '' }}> No Pork</label>
+            </div>
         </div>
+
 
         <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Update Customer</button>
     </form>
