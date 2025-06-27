@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Allergy extends Model
 {
-    protected $fillable = ['name', 'description', 'risk'];
+    protected $fillable = ['name', 'description', 'risk', 'is_actief'];
+
+    
 
     public function customers()
     {

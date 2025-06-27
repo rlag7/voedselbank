@@ -2,6 +2,48 @@
 
 @section('dashboard-content')
     <h1 class="text-2xl font-semibold mb-4">All Allergies</h1>
+    @if (session('success'))
+    <div 
+        class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-lg px-4"
+        x-data="{ show: true }"
+        x-show="show"
+    >
+        <div class="bg-green-100 border border-green-300 text-green-900 px-6 py-4 rounded-lg shadow-md relative">
+            <button 
+                type="button" 
+                class="absolute top-2 right-3 text-xl font-bold text-green-800 hover:text-green-900" 
+                @click="show = false"
+            >
+                &times;
+            </button>
+            <p class="text-base font-medium">
+                {{ session('success') }}
+            </p>
+        </div>
+    </div>
+@endif
+
+@if (session('error'))
+    <div 
+        class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-lg px-4 mt-16"
+        x-data="{ show: true }"
+        x-show="show"
+    >
+        <div class="bg-red-100 border border-red-300 text-red-800 px-6 py-4 rounded-lg shadow-md relative">
+            <button 
+                type="button" 
+                class="absolute top-2 right-3 text-xl font-bold text-red-800 hover:text-red-900" 
+                @click="show = false"
+            >
+                &times;
+            </button>
+            <p class="text-base font-medium">
+                {{ session('error') }}
+            </p>
+        </div>
+    </div>
+@endif
+
 
     @if (session('success'))
     <div 
@@ -36,7 +78,9 @@
             <th class="p-4 text-left">Name</th>
             <th class="p-4 text-left">Description</th>
             <th class="p-4 text-left">Risk</th>
+            <th class="p-4 text-center">Status</th>
             <th class="p-4 text-center">Actions</th>
+
         </tr>
         </thead>
         <tbody>
@@ -45,6 +89,17 @@
             <td class="p-4">{{ $allergy->name }}</td>
             <td class="p-4">{{ $allergy->description }}</td>
             <td class="p-4">{{ $allergy->risk }}</td>
+            <td class="p-4 text-center">
+    <form method="POST" action="{{ route('employee.allergy.toggle', $allergy) }}">
+        @csrf
+        @method('PATCH')
+        <button class="px-2 py-1 text-xs font-medium rounded 
+            {{ $allergy->is_actief ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-600' }}">
+            {{ $allergy->is_actief ? 'Actief' : 'Inactief' }}
+        </button>
+    </form>
+</td>
+
             <td class="p-4 flex justify-center space-x-2">
                 <a href="{{ route('employee.allergy.show', $allergy) }}" class="text-gray-600 hover:text-black">View</a>
                 <a href="{{ route('employee.allergy.edit', $allergy) }}" class="text-blue-600 hover:underline">Edit</a>
