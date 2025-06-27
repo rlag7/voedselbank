@@ -13,7 +13,7 @@ return new class extends Migration
     {
     Schema::create('allergies', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 25);
+            $table->string('name', 25)->unique();
             $table->string('description', 50);
             $table->string('risk', 100);
             $table->timestamps();

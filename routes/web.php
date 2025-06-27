@@ -26,6 +26,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Authenticated routes
+Route::patch('/employee/allergy/{allergy}/toggle', [AllergyController::class, 'toggle'])
+    ->name('employee.allergy.toggle');
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
