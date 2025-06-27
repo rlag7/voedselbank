@@ -1,6 +1,3 @@
-<script src="https://cdn.tailwindcss.com"></script>
-
-
 @extends('dashboard')
 
 @section('dashboard-content')
@@ -60,57 +57,17 @@
                 </label>
             </div>
 
-            <div class="text-center">
+            <div class="text-center space-x-4">
                 <button type="submit"
                         class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition text-sm">
                     Bijwerken
                 </button>
+                <a href="{{ route('employee.food_packages.index') }}"
+                   class="inline-block bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition text-sm">
+                    Annuleren
+                </a>
             </div>
+
         </form>
     </div>
 @endsection
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.querySelector('form');
-        const composition = document.querySelector('[name="composition_date"]');
-        const distribution = document.querySelector('[name="distribution_date"]');
-
-        function showError(input, message) {
-            let errorEl = input.parentElement.querySelector('.input-error');
-            if (!errorEl) {
-                errorEl = document.createElement('p');
-                errorEl.className = 'input-error text-sm text-red-700 bg-red-100 border border-red-300 rounded px-3 py-2 mt-2';
-                input.parentElement.appendChild(errorEl);
-            }
-            errorEl.innerText = message;
-        }
-
-        function clearError(input) {
-            const errorEl = input.parentElement.querySelector('.input-error');
-            if (errorEl) errorEl.remove();
-        }
-
-        form.addEventListener('submit', function (e) {
-            let valid = true;
-            clearError(composition);
-            clearError(distribution);
-
-            const today = new Date().toISOString().split('T')[0];
-            const compDate = composition.value;
-            const distDate = distribution.value;
-
-            if (compDate && compDate < today) {
-                showError(composition, 'De samenstel datum mag niet in het verleden liggen.');
-                valid = false;
-            }
-
-            if (distDate && compDate && distDate < compDate) {
-                showError(distribution, 'De distributiedatum mag niet eerder zijn dan de samenstel datum.');
-                valid = false;
-            }
-
-            if (!valid) e.preventDefault();
-        });
-    });
-</script>
