@@ -48,7 +48,6 @@ Route::middleware(['auth', 'role:employee'])->prefix('employee')->name('employee
     Route::resource('allergy', AllergyController::class);
     Route::resource('customers', CustomerController::class);
 
-    // ✅ Extra route om 'active' te toggelen
     Route::patch('/customers/{customer}/toggle-active', [CustomerController::class, 'toggleActive'])->name('customers.toggle-active');
 });
 

@@ -38,7 +38,7 @@
                     <input type="text" name="postal_code" class="w-full border rounded px-3 py-2" required>
                 </div>
                 <div>
-                    <label class="block mb-1">Stad *</label>
+                    <label class="block mb-1">Woonplaats *</label>
                     <input type="text" name="city" class="w-full border rounded px-3 py-2" required>
                 </div>
             </div>
@@ -90,7 +90,9 @@
 
             <div id="selected-products-area" class="space-y-4 mt-4"></div>
 
-            <button type="button" id="add-category-btn" class="text-blue-600 hover:underline text-sm mt-2">+ Voeg extra categorie toe</button>
+            <button type="button" id="add-category-btn" class="text-blue-600 hover:underline text-sm mt-2">
+                + Voeg extra categorie toe
+            </button>
 
             <button type="submit" class="block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-6 w-full">
                 Opslaan
@@ -159,7 +161,6 @@
             });
 
             quantityInput.addEventListener('input', updateHiddenInput);
-
             updateHiddenInput();
 
             const removeBtn = document.createElement('button');
@@ -175,13 +176,10 @@
             wrapper.appendChild(select);
             wrapper.appendChild(quantityInput);
             wrapper.appendChild(removeBtn);
-
             container.appendChild(wrapper);
             container.appendChild(productInput);
-
             selectedProductsArea.appendChild(container);
 
-            // trigger immediately
             if (select.value) selectedProductIds.add(parseInt(select.value));
         }
 
